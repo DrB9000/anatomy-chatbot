@@ -7,8 +7,9 @@ from groq import Groq
 app = Flask(__name__)
 CORS(app)
 
-PINECONE_API_KEY = "your-pinecone-key"
-GROQ_API_KEY = "your-groq-key"
+import os
+PINECONE_API_KEY = os.environ.get("PINECONE_API_KEY")
+GROQ_API_KEY = os.environ.get("GROQ_API_KEY")
 INDEX_NAME = "anatomy-tutor"
 
 embedding_model = TextEmbedding("BAAI/bge-small-en-v1.5")
