@@ -3,4 +3,5 @@ flask-cors
 groq
 pinecone
 pypdf
-sentence-transformers
+fastembed
+gunicorn
