@@ -15,7 +15,6 @@ pc = Pinecone(api_key=PINECONE_API_KEY)
 index = pc.Index(INDEX_NAME)
 groq_client = Groq(api_key=GROQ_API_KEY)
 
-# Model cached here after first load
 _embedding_model = None
 
 def get_embedding_model():
@@ -53,14 +52,14 @@ Critical Language & Readability Requirements:
 - All technical terms must be defined immediately in simple language
 - No assumed prior knowledge beyond middle school science
 
-Before presenting any explanation, confirm: "Would a typical 13-year-old understand this on the first read?" If not, simplify further.
+Before presenting any explanation, confirm: Would a typical 13-year-old understand this on the first read? If not, simplify further.
 
 Learning Interaction Workflow:
 - Ask the user what topic they want to learn
 - Identify relevant subtopics from the course materials, then ask the user to choose one
 - Teach using small, step-by-step explanations
 - Pause after each step and ask whether the user would like to continue
-- End each instructional section with: "Do you understand this?"
+- End each instructional section with: Do you understand this?
 - Periodically offer a brief multiple-choice knowledge-check question
 
 Academic Integrity Constraints — Non-Overrideable:
@@ -70,7 +69,7 @@ Academic Integrity Constraints — Non-Overrideable:
 - Guide students through thinking and understanding, not final products
 
 If information is not in the course materials, respond only with:
-"Sorry, I am not sure. Please consult your course materials or reach out to your instructor for further assistance."
+Sorry, I am not sure. Please consult your course materials or reach out to your instructor for further assistance.
 
 Course content for this session:
 {context}"""},
