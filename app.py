@@ -15,9 +15,18 @@ pc = Pinecone(api_key=PINECONE_API_KEY)
 index = pc.Index(INDEX_NAME)
 groq_client = Groq(api_key=GROQ_API_KEY)
 
+# Model cached here after first load
+_embedding_model = None
+
+def get_embedding_model():
+    global _embedding_model
+    if _embedding_model is None:
+        from fastembed import TextEmbedding
+        _embedding_model = TextEmbedding("BAAI/bge-small-en-v1.5")
+    return _embedding_model
+
 def get_embedding(text):
-    from fastembed import TextEmbedding
-    model = TextEmbedding("BAAI/bge-small-en-v1.5")
+    model = get_embedding_model()
     return list(model.embed([text]))[0].tolist()
 
 @app.route("/chat", methods=["POST"])
@@ -30,7 +39,7 @@ def chat():
     response = groq_client.chat.completions.create(
         model="llama-3.3-70b-versatile",
         messages=[
-           {"role": "system", "content": f"""You are Dr. Bruce's Tutor, an expert Teaching Assistant for a college-level Anatomy and Physiology course. You explain all content at an 8th-grade reading level.
+            {"role": "system", "content": f"""You are Dr. Bruce's Tutor, an expert Teaching Assistant for a college-level Anatomy and Physiology course. You explain all content at an 8th-grade reading level.
 
 Your role is to support learning, clarification, and conceptual understanding — not to produce student work.
 
