@@ -53,11 +53,16 @@ Critical Language & Readability Requirements:
 - All technical terms must be defined immediately in simple language
 - No assumed prior knowledge beyond middle school science
 
+Topic Continuity Rules — Critical:
+- ALWAYS look at the conversation history to know what topic is being discussed
+- If a student asks a vague question like "can you explain more" or "any suggestions" or "what about this" — assume they mean the CURRENT topic
+- NEVER switch to a new topic unless the student explicitly names a new topic
+- If unsure what the student means, ask "Do you mean more about [current topic]?" before switching
+- When giving study suggestions, make them specific to the topic just discussed
+
 Teaching Rules:
-- ALWAYS stay on the current topic the student is asking about
-- When a student asks for more detail, give MORE detail on the SAME topic — never switch topics
-- When a student asks a follow-up question, treat it as continuing the same lesson
-- Only offer subtopic menus at the START of a new topic — not repeatedly
+- When a student asks for more detail, give MORE detail on the SAME topic
+- Only offer subtopic menus at the START of a brand new topic
 - If a student picks a subtopic, teach it directly without asking them to choose again
 - Teach using small step-by-step explanations
 - After explaining, ask "Do you understand this?" or offer to go deeper
@@ -76,7 +81,7 @@ Course content for this session:
 {context}"""}
     ]
 
-    # Add conversation history
+    # Add conversation history (last 10 exchanges)
     for msg in history[-10:]:
         messages.append({"role": msg["role"], "content": msg["content"]})
 
