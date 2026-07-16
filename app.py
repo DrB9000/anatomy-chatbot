@@ -1,8 +1,9 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, Response, stream_with_context
 from flask_cors import CORS
 from pinecone import Pinecone
 from groq import Groq
 import os
+import json
 
 app = Flask(__name__)
 CORS(app)
@@ -81,18 +82,25 @@ Course content for this session:
 {context}"""}
     ]
 
-    # Add conversation history (last 10 exchanges)
     for msg in history[-10:]:
         messages.append({"role": msg["role"], "content": msg["content"]})
-
-    # Add current question
     messages.append({"role": "user", "content": question})
 
-    response = groq_client.chat.completions.create(
-        model="llama-3.3-70b-versatile",
-        messages=messages
-    )
-    return jsonify({"answer": response.choices[0].message.content})
+    def generate():
+        full_response = ""
+        stream = groq_client.chat.completions.create(
+            model="llama-3.3-70b-versatile",
+            messages=messages,
+            stream=True
+        )
+        for chunk in stream:
+            token = chunk.choices[0].delta.content
+            if token:
+                full_response += token
+                yield f"data: {json.dumps({'token': token})}\n\n"
+        yield f"data: {json.dumps({'done': True, 'full': full_response})}\n\n"
+
+    return Response(stream_with_context(generate()), mimetype="text/event-stream")
 
 if __name__ == "__main__":
     app.run()
