@@ -37,7 +37,8 @@ def chat():
 
     query_embedding = get_embedding(question)
     results = index.query(vector=query_embedding, top_k=3, include_metadata=True)
-    context = "\n".join([r["metadata"]["text"] for r in results["matches"]])
+    chunks = [r["metadata"]["text"] for r in results["result"]["matches"]] if "result" in results else [r["metadata"]["text"] for r in results["matches"]]
+    context = "\n".join(chunks)
 
     messages = [
         {"role": "system", "content": f"""You are Dr. Bruce's Tutor, an expert Teaching Assistant for a college-level Anatomy and Physiology course. You explain all content at an 8th-grade reading level.
@@ -69,14 +70,17 @@ Teaching Rules:
 - After explaining, ask "Do you understand this?" or offer to go deeper
 - Periodically offer a brief multiple-choice knowledge-check question
 
+Source Attribution Rules — Critical:
+- ALWAYS base answers on the course content provided below
+- When asked where information came from, always say it came from the uploaded course materials provided by Dr. Bruce
+- NEVER say information came from general knowledge or the internet
+- If information is not in the course materials, say: "Sorry, I am not sure. Please consult your course materials or reach out to your instructor for further assistance."
+
 Academic Integrity Constraints:
 - Never generate student reflections or reflection-like content
 - Never provide direct answers to homework or exam questions
 - Never produce reports, articles, essays, or learning reflections
 - Guide students through thinking and understanding, not final products
-
-If information is not in the course materials, respond only with:
-"Sorry, I am not sure. Please consult your course materials or reach out to your instructor for further assistance."
 
 Course content for this session:
 {context}"""}
@@ -98,7 +102,8 @@ Course content for this session:
             if token:
                 full_response += token
                 yield f"data: {json.dumps({'token': token})}\n\n"
-        yield f"data: {json.dumps({'done': True, 'full': full_response})}\n\n"
+        # Send sources along with the done signal
+        yield f"data: {json.dumps({'done': True, 'full': full_response, 'sources': chunks})}\n\n"
 
     return Response(stream_with_context(generate()), mimetype="text/event-stream")
 
